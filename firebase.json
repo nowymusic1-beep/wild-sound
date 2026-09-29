@@ -1,0 +1,24 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "*.zip",
+      "*-desktop.png",
+      "*-mobile.png",
+      "desktop.png",
+      "mobile.png",
+      "indigo-desktop.png",
+      "sidebar-*.png"
+    ],
+    "headers": [
+      {
+        "source": "**/*.@(mp3|aac)",
+        "headers": [{"key": "Accept-Ranges", "value": "bytes"}]
+      }
+    ],
+    "rewrites": [{"source": "**", "destination": "/index.html"}]
+  }
+}
