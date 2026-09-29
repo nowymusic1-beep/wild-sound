@@ -1,0 +1,7 @@
+import http from 'node:http';
+import {readFile} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+import path from 'node:path';
+const root=fileURLToPath(new URL('.',import.meta.url));
+const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.wav':'audio/wav','.mp3':'audio/mpeg','.aac':'audio/aac','.json':'application/json','.md':'text/plain'};
+http.createServer(async(req,res)=>{try{const url=new URL(req.url,'http://localhost');const file=path.resolve(root,'.'+decodeURIComponent(url.pathname==='/'?'/index.html':url.pathname));if(!file.startsWith(root))throw Error();const data=await readFile(file);const type=types[path.extname(file)]||'application/octet-stream';const range=req.headers.range;if(range&&type.startsWith('audio/')){const [,startText,endText]=range.match(/bytes=(\d+)-(\d*)/)||[];const start=Number(startText)||0;const end=Math.min(endText?Number(endText):data.length-1,data.length-1);if(start>end)throw Error();res.writeHead(206,{'Content-Type':type,'Content-Length':end-start+1,'Content-Range':`bytes ${start}-${end}/${data.length}`,'Accept-Ranges':'bytes'});return res.end(data.subarray(start,end+1));}res.writeHead(200,{'Content-Type':type,'Content-Length':data.length,'Accept-Ranges':'bytes'});res.end(data);}catch{res.writeHead(404);res.end('Not found');}}).listen(4173,'127.0.0.1',()=>console.log('Beatplace: http://localhost:4173'));
